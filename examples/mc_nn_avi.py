@@ -34,7 +34,6 @@ class MountainCarSim(gym.envs.classic_control.MountainCarEnv):
 regressor = make_pipeline(MinMaxScaler(),
                           KNeighborsRegressor(10,algorithm='ball_tree'))
 
-# state sampler: here uniform sampling
 
 # run AVI
 sim = MountainCarSim()
