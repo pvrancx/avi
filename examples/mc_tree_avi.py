@@ -31,7 +31,7 @@ class MountainCarSim(gym.envs.classic_control.MountainCarEnv):
         self.state = state
 
 # prototype for regressor to use: regression tree
-regressor = DecisionTreeRegressor(max_depth=15,min_samples_leaf=2)
+regressor = DecisionTreeRegressor(max_depth=15,min_samples_leaf=3)
 
 
 # run AVI
@@ -74,7 +74,7 @@ Xs, Ys = np.meshgrid(np.linspace(low[0],high[0],100),
 Qs = np.zeros( Xs.shape+(n_actions,))
 
 for a in range(env.action_space.n):
-    Qs[:,:,a].flat = mc_avi.get_multiple_state_values(np.c_[Xs.flatten(),Ys.flatten()],a)
+    Qs[:,:,a].flat = mc_avi.get_multiple_state_action_values(np.c_[Xs.flatten(),Ys.flatten()],a)
 
 
 fig = plt.figure()

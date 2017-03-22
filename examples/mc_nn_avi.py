@@ -22,6 +22,8 @@ parser.add_argument('--niter', type=int, default=1000,
                     help='number of iterations')
 parser.add_argument('--nsamples', type=int, default=1000,
                     help='sample to generate per iteration ')
+parser.add_argument('--resample', type=int, default=-1,
+                help='how many iterations before resampling states (-1 for never)')
 
 args = parser.parse_args()
 
@@ -39,7 +41,10 @@ regressor = make_pipeline(MinMaxScaler(),
 sim = MountainCarSim()
 mc_avi = ApproximateValueIteration(sim,1.,uniform_sampler,regressor)
 
-mc_avi.train(n_samples=args.nsamples,n_transitions=1, n_iter=args.niter)
+mc_avi.train(n_samples=args.nsamples,
+    n_transitions=1,
+    n_iter=args.niter,
+    resample=args.resample)
 mc_avi.save_value_function('temp.pkl')
 
 # apply learnt policy to real env
@@ -75,7 +80,7 @@ Xs, Ys = np.meshgrid(np.linspace(low[0],high[0],100),
 Qs = np.zeros( Xs.shape+(n_actions,))
 
 for a in range(env.action_space.n):
-    Qs[:,:,a].flat = mc_avi.get_multiple_state_values(np.c_[Xs.flatten(),Ys.flatten()],a)
+    Qs[:,:,a].flat = mc_avi.get_multiple_state_action_values(np.c_[Xs.flatten(),Ys.flatten()],a)
 
 
 fig = plt.figure()
