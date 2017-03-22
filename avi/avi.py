@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.base import clone
-
+from timeit import default_timer as timer
 import cPickle as pickle
 import matplotlib.pyplot as plt
 
@@ -38,8 +38,9 @@ class ApproximateValueIteration(object):
 
     def train(self,n_samples,n_transitions, n_iter):
         ''' Run value iterations for given number of iterations'''
+        start_time = timer()
+        avg_time = 0.
         for it in range(n_iter):
-            print('started iteration %d'%it)
             regressors = [clone(self.prototype) for _ in range(self.n_actions)]
             states = self.sampler(self.env,n_samples)
             values = np.zeros((n_samples,self.n_actions))
@@ -52,6 +53,11 @@ class ApproximateValueIteration(object):
                         obs,rew,done,_ = self.env.step(a)
                         val += rew + self.gamma * self.get_value(obs) * (not done)
                     values[s,a]= val/ n_transitions
+            end_time = timer()
+            dt = end_time - start_time
+            avg_time += (dt-avg_time)/float(it+1)
+            print('ended iteration %d -- time %f --avg time %f -- remaining %f'%(it,dt,avg_time,avg_time*(n_iter-it)))
+            start_time = end_time
 
 
             for a in range(self.n_actions):
